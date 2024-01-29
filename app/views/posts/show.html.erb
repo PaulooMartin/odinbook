@@ -1,2 +1,4 @@
-<h4><%= @post.user.full_name %><h4/>
+<h4><%= @post.user.full_name %></h4>
 <p><%= @post.content %></p>
+
+<%= link_to "Edit this post", edit_post_path(@post) %>
