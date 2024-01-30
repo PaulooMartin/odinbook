@@ -5,7 +5,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :posts
-  has_many :likes
+  has_many :likes, foreign_key: 'user_id', inverse_of: 'liker'
+  has_many :liked_posts, through: :likes
 
   validates_presence_of :first_name, :last_name
 
