@@ -1,5 +1,6 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
+  before_action :post_owner?, only: %i[edit update destroy]
 
   def index
     @posts = Post.all
@@ -47,5 +48,10 @@ class PostsController < ApplicationController
 
   def post_params
     params.require(:post).permit(:content)
+  end
+
+  def post_owner?
+    post = Post.find(params[:id])
+    redirect_to(root_url, alert: 'Unauthorized request') unless current_user == post.user
   end
 end
