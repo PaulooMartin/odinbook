@@ -1,3 +1,6 @@
 <hr>
 <h4><%= post.user.full_name %></h4>
 <p><%= post.content %></p>
+<p><%= post.likes.count %>👍</p>
+
+<%= button_to "Like this post", likes_path, params: { post: post.id } %>
