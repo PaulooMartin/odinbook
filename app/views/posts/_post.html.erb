@@ -3,4 +3,8 @@
 <p><%= post.content %></p>
 <p><%= post.likes.count %>👍</p>
 
-<%= button_to "Like this post", likes_path, params: { post: post.id } %>
+<% if post.likers.include?(current_user) %>
+    <%= button_to "Unlike this post", like_path, { method: :delete, params: { post: post.id } } %>
+<% else %>
+    <%= button_to "Like this post", like_path, params: { post: post.id } %>
+<% end %>
