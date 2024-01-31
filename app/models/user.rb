@@ -8,6 +8,8 @@ class User < ApplicationRecord
   has_many :likes, foreign_key: 'user_id', inverse_of: 'liker'
   has_many :liked_posts, through: :likes
 
+  has_many :comments, foreign_key: 'user_id', inverse_of: 'commentor'
+
   validates_presence_of :first_name, :last_name
 
   def full_name
