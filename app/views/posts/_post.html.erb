@@ -8,3 +8,8 @@
 <% else %>
     <%= button_to "Like this post", like_path, params: { post: post.id } %>
 <% end %>
+
+<h3>Comments</h3>
+<% post.comments.each do |comment| %>
+    <p><%= comment.commentor.full_name %>: <%= comment.content %></p>
+<% end %>
