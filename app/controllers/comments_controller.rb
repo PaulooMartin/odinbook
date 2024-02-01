@@ -1,6 +1,7 @@
 class CommentsController < ApplicationController
   before_action :authenticate_user!
   before_action :post_exists?
+  before_action :comment_exists?, only: %i[edit update destroy]
   before_action :comment_owner?, only: %i[edit update destroy]
 
   def new
@@ -49,8 +50,15 @@ class CommentsController < ApplicationController
     params.require(:comment).permit(:content)
   end
 
+  def comment_exists?
+    message = 'That comment does not exist!'
+    redirect_to(root_url, alert: message) unless Comment.find_by(id: params[:id])
+  end
+
   def comment_owner?
     comment = Comment.find(params[:id])
-    redirect_to(root_url, alert: 'You are not the owner of that comment') unless current_user == comment.commentor
+
+    message = 'You are not the owner of that comment'
+    redirect_to(root_url, alert: message) unless current_user == comment.commentor
   end
 end
