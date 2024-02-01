@@ -1,6 +1,7 @@
 class CommentsController < ApplicationController
   before_action :authenticate_user!
   before_action :post_exists?
+  before_action :comment_owner?, only: %i[edit update destroy]
 
   def new
     @post = Post.find(params[:post_id])
@@ -19,9 +20,21 @@ class CommentsController < ApplicationController
     end
   end
 
-  def edit; end
+  def edit
+    @post = Post.find(params[:post_id])
+    @comment = Comment.find(params[:id])
+  end
 
-  def update; end
+  def update
+    @post = Post.find(params[:post_id])
+    @comment = Comment.find(params[:id])
+
+    if @comment.update(comment_params)
+      redirect_to @post, notice: 'Comment updated successfully'
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
 
   def destroy; end
 
@@ -34,5 +47,10 @@ class CommentsController < ApplicationController
 
   def comment_params
     params.require(:comment).permit(:content)
+  end
+
+  def comment_owner?
+    comment = Comment.find(params[:id])
+    redirect_to(root_url, alert: 'You are not the owner of that comment') unless current_user == comment.commentor
   end
 end
