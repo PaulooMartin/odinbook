@@ -1,5 +1,6 @@
 class CommentsController < ApplicationController
   before_action :authenticate_user!
+  before_action :post_exists?
 
   def new
     @post = Post.find(params[:post_id])
@@ -15,4 +16,11 @@ class CommentsController < ApplicationController
   def update; end
 
   def destroy; end
+
+  private
+
+  def post_exists?
+    message = 'You are making a comment on a post that does not exist'
+    redirect_to root_url, alert: message unless Post.find_by(id: params[:post_id])
+  end
 end
