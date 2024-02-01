@@ -8,7 +8,15 @@ class CommentsController < ApplicationController
   end
 
   def create
+    @post = Post.find(params[:post_id])
+    @comment = @post.comments.build(comment_params)
+    @comment.commentor = current_user
 
+    if @comment.save
+      redirect_to @post, notice: 'Comment added successfully'
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def edit; end
@@ -21,6 +29,10 @@ class CommentsController < ApplicationController
 
   def post_exists?
     message = 'You are making a comment on a post that does not exist'
-    redirect_to root_url, alert: message unless Post.find_by(id: params[:post_id])
+    redirect_to(root_url, alert: message) unless Post.find_by(id: params[:post_id])
+  end
+
+  def comment_params
+    params.require(:comment).permit(:content)
   end
 end
