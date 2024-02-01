@@ -10,6 +10,13 @@
 <% end %>
 
 <h3>Comments</h3>
+<%= link_to "Add comment 📃", new_post_comment_path(post) %>
 <% post.comments.each do |comment| %>
-    <p><%= comment.commentor.full_name %>: <%= comment.content %></p>
+    <div class='comment'>
+        <p><%= comment.commentor.full_name %>: <%= comment.content %></p>
+        <% if current_user == comment.commentor %>
+            <%= link_to "Edit comment 🖋️", edit_post_comment_path(post, comment) %>
+            <%= button_to "Delete comment 🗑️", post_comment_path(post, comment), { method: :delete }%>
+        <% end %>
+    </div>
 <% end %>
