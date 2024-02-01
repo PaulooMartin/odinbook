@@ -1,3 +1,4 @@
+<%= render partial: 'comment_errors', locals: {comment: @comment} %>
 <%= form_for ([@post, @comment]) do |f| %>
     <%= hidden_field_tag :post_id, @post.id %>
     <div class="field">

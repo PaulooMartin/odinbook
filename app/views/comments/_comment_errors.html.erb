@@ -1,0 +1,7 @@
+<% if comment.errors.any? %>
+    <ul id="comment-form-errors" class="text-red-600">
+        <% comment.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+        <% end %>
+    </ul>
+<% end %>
