@@ -1,4 +1,11 @@
-<div>
-  <h1 class="font-bold text-4xl">Comments#new</h1>
-  <p>Find me in app/views/comments/new.html.erb</p>
-</div>
+<%= form_for ([@post, @comment]) do |f| %>
+    <%= hidden_field_tag :post_id, @post.id %>
+    <div class="field">
+        <%= f.label :content, "Enter your comment" %> <br /> 
+        <%= f.text_area :content %>
+    </div>
+
+    <div class="field">
+        <%= f.submit "Submit comment" %>
+    </div>
+<% end %>  

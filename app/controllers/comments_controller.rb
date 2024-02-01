@@ -1,7 +1,14 @@
 class CommentsController < ApplicationController
-  def new; end
+  before_action :authenticate_user!
 
-  def create; end
+  def new
+    @post = Post.find(params[:post_id])
+    @comment = Comment.new
+  end
+
+  def create
+
+  end
 
   def edit; end
 
