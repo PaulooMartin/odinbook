@@ -6,24 +6,24 @@
 
 <hr>
 <h1>People you follow</h1>
-<% current_user.follow_outbound.accepted.each do |request| %>
+<% current_user.follows_outbound.accepted.each do |request| %>
     <p class="text-red-700"><%= request.followee.full_name %></p>
 <% end %>
 
 <hr>
 <h1>People you sent a follow request to</h1>
-<% current_user.follow_outbound.pending.each do |request| %>
+<% current_user.follows_outbound.pending.each do |request| %>
     <p class='text-red-700'><%= request.followee.full_name %></p>
 <% end %>
 
 <hr>
 <h1>People following you</h1>
-<% current_user.follow_inbound.accepted.each do |request| %>
+<% current_user.follows_inbound.accepted.each do |request| %>
     <p class="text-blue-700"><%= request.follower.full_name %></p>
 <% end %>
 
 <hr>
 <h1>Unresponded follow requests</h1>
-<% current_user.follow_inbound.pending.each do |request| %>
+<% current_user.follows_inbound.pending.each do |request| %>
     <p class='text-blue-700'><%= request.follower.full_name %></p>
 <% end %>
