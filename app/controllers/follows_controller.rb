@@ -1,9 +1,11 @@
 class FollowsController < ApplicationController
   before_action :authenticate_user!
   before_action :init_follow
-  before_action :other_user_exists?
-  before_action :follow_already_exists?, only: [:create]
+  before_action :other_user_exists?, except: [:destroy]
+  before_action :tries_follow_again?, only: [:create]
   before_action :tries_follow_self?, only: [:create]
+  before_action :follow_exists?, only: [:destroy]
+  before_action :current_user_is_participant?, only: [:destroy]
 
   def create
     # other_user refers to person being followed
@@ -27,7 +29,12 @@ class FollowsController < ApplicationController
     end
   end
 
-  def destroy; end
+  def destroy
+    follow = Follow.find(params[:id])
+    follow.destroy
+
+    redirect_to root_url, notice: 'Unfollow successful'
+  end
 
   private
 
@@ -39,7 +46,7 @@ class FollowsController < ApplicationController
     redirect_to(root_url, alert: 'Other user does not exist!') unless @other_user
   end
 
-  def follow_already_exists?
+  def tries_follow_again?
     # other_user refers to person being followed
     follow = Follow.find_by(follower_id: current_user.id, followee_id: @other_user.id)
     redirect_to(root_url, alert: "You already followed #{@other_user.full_name}") if follow
@@ -48,5 +55,15 @@ class FollowsController < ApplicationController
   def tries_follow_self?
     # other_user refers to person being followed
     redirect_to(root_url, alert: 'You cannot follow yourself!') if current_user == @other_user
+  end
+
+  def follow_exists?
+    follow = Follow.find_by(id: params[:id])
+    redirect_to(root_url, alert: 'Follow does not exists!') unless follow
+  end
+
+  def current_user_is_participant?
+    follow = Follow.find(params[:id])
+    redirect_to(root_url, alert: 'You are not a participant of this follow') unless follow.participant?(current_user)
   end
 end
