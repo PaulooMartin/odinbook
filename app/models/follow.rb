@@ -6,4 +6,8 @@ class Follow < ApplicationRecord
   # followee refers to the person being followed by the follower
   belongs_to :follower, foreign_key: 'follower_id', class_name: 'User', inverse_of: 'follows_outbound'
   belongs_to :followee, foreign_key: 'followee_id', class_name: 'User', inverse_of: 'follows_inbound'
+
+  def participant?(user)
+    (user == follower) || (user == followee)
+  end
 end
