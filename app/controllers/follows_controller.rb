@@ -1,10 +1,11 @@
 class FollowsController < ApplicationController
   before_action :authenticate_user!
-  before_action :init_follow
-  before_action :other_user_exists?, except: [:destroy]
+  before_action :init_follow, only: [:create]
+  before_action :other_user_exists?, only: [:create]
   before_action :tries_follow_again?, only: [:create]
   before_action :tries_follow_self?, only: [:create]
-  before_action :follow_exists?, only: [:destroy]
+  before_action :follow_exists?, except: [:create]
+  before_action :current_user_is_followee?, only: [:update]
   before_action :current_user_is_participant?, only: [:destroy]
 
   def create
@@ -19,13 +20,12 @@ class FollowsController < ApplicationController
   end
 
   def update
-    # other_user refers to follower
-    follow = current_user.follows_inbound.pending.find_by(follower_id: @other_user.id)
+    follow = Follow.find(params[:id])
 
     if follow.update(pending: false)
-      redirect_to root_url, notice: "You have accepted #{@other_user.full_name}'s follow request"
+      redirect_to root_url, notice: "You have accepted #{follow.follower.full_name}'s follow request"
     else
-      redirect_to root_url, alert: "An error occured when trying to accept #{@other_user.full_name}'s follow request"
+      redirect_to root_url, alert: "An error occured when trying to accept #{follow.follower.full_name}'s follow request"
     end
   end
 
@@ -60,6 +60,11 @@ class FollowsController < ApplicationController
   def follow_exists?
     follow = Follow.find_by(id: params[:id])
     redirect_to(root_url, alert: 'Follow does not exists!') unless follow
+  end
+
+  def current_user_is_followee?
+    follow = Follow.find(params[:id])
+    redirect_to(root_url, alert: 'You are not the one being followed') unless current_user == follow.followee
   end
 
   def current_user_is_participant?
