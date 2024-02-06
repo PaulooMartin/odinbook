@@ -1,7 +1,7 @@
 class FollowsController < ApplicationController
   before_action :authenticate_user!
-  before_action :init_follow, only: [:create]
-  before_action :other_user_exists?, only: [:create]
+  before_action :init_followee, only: [:create]
+  before_action :followee_exists?, only: [:create]
   before_action :tries_follow_again?, only: [:create]
   before_action :tries_follow_self?, only: [:create]
   before_action :follow_exists?, except: [:create]
@@ -9,13 +9,12 @@ class FollowsController < ApplicationController
   before_action :current_user_is_participant?, only: [:destroy]
 
   def create
-    # other_user refers to person being followed
-    follow = current_user.follows_outbound.build(followee_id: @other_user.id)
+    follow = current_user.follows_outbound.build(followee_id: @followee.id)
 
     if follow.save
-      redirect_to root_url, notice: "Successfully followed #{@other_user.full_name}"
+      redirect_to root_url, notice: "Successfully followed #{@followee.full_name}"
     else
-      redirect_to root_url, alert: "An error occurred when trying to follow #{@other_user.full_name}"
+      redirect_to root_url, alert: "An error occurred when trying to follow #{@followee.full_name}"
     end
   end
 
@@ -38,23 +37,21 @@ class FollowsController < ApplicationController
 
   private
 
-  def init_follow
-    @other_user = User.find_by(id: params[:user])
+  def init_followee
+    @followee = User.find_by(id: params[:user])
   end
 
-  def other_user_exists?
-    redirect_to(root_url, alert: 'Other user does not exist!') unless @other_user
+  def followee_exists?
+    redirect_to(root_url, alert: "The person you're trying to follow does not exist!") unless @followee
   end
 
   def tries_follow_again?
-    # other_user refers to person being followed
-    follow = Follow.find_by(follower_id: current_user.id, followee_id: @other_user.id)
-    redirect_to(root_url, alert: "You already followed #{@other_user.full_name}") if follow
+    follow = Follow.find_by(follower_id: current_user.id, followee_id: @followee.id)
+    redirect_to(root_url, alert: "You already followed #{@followee.full_name}") if follow
   end
 
   def tries_follow_self?
-    # other_user refers to person being followed
-    redirect_to(root_url, alert: 'You cannot follow yourself!') if current_user == @other_user
+    redirect_to(root_url, alert: 'You cannot follow yourself!') if current_user == @followee
   end
 
   def follow_exists?
