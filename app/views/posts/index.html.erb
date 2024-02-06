@@ -8,22 +8,35 @@
 <h1>People you follow</h1>
 <% current_user.follows_outbound.accepted.each do |request| %>
     <p class="text-red-700"><%= request.followee.full_name %></p>
+    <%= button_to "Unfollow #{request.followee.full_name}", follow_path(request), method: :delete %>
 <% end %>
 
 <hr>
 <h1>People you sent a follow request to</h1>
 <% current_user.follows_outbound.pending.each do |request| %>
     <p class='text-red-700'><%= request.followee.full_name %></p>
+    <%= button_to "Cancel follow request to #{request.followee.full_name}", follow_path(request), method: :delete %>
 <% end %>
 
 <hr>
 <h1>People following you</h1>
 <% current_user.follows_inbound.accepted.each do |request| %>
     <p class="text-blue-700"><%= request.follower.full_name %></p>
+    <%= button_to "Remove follower #{request.follower.full_name}", follow_path(request), method: :delete %>
 <% end %>
 
 <hr>
 <h1>Unresponded follow requests</h1>
 <% current_user.follows_inbound.pending.each do |request| %>
     <p class='text-blue-700'><%= request.follower.full_name %></p>
+    <%= button_to "Accept follow request", follow_path(request), method: :patch %>
+    <%= button_to "Deny follow request", follow_path(request), method: :delete %>
+<% end %>
+
+<hr>
+<p>All other users</p>
+<% User.all.each do |user| %>
+    <% unless user == current_user %>
+        <%= button_to "Follow #{user.full_name}", follows_path, params: { user:user.id } %>
+    <% end %>
 <% end %>
